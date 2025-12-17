@@ -176,7 +176,27 @@
             z-index: 910; 
             background-color: #00bcd4;
         }
-        
+        @media (max-width: 600px) {
+            button {
+                padding: 12px;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            #battleTable td, #battleTable th {
+                font-size: 11px; /* スマホでは文字を小さく */
+                padding: 2px 4px;
+            }
+            #blessingTable td, #blessingTable th {
+                font-size: 11px; /* スマホでは文字を小さく */
+                padding: 2px 4px;
+            }
+            #battleTable td:nth-child(2),#battleTable th:nth-child(2) {
+                position: static !important;
+            }
+            #blessingTable td:nth-child(2),#blessingTable th:nth-child(2) {
+                position: static !important;
+            }
+        }
     </style>
 </head>
 <body>
