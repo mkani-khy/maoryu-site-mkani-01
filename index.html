@@ -92,6 +92,20 @@
             right: 2px;
             z-index: 100;
         }
+        @media (max-width: 600px){
+            body{
+                font-family: sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-image: url('image/background(5).jpg'); /* 例: 'image/main_bg.png'など */
+                background-size: cover;          /* 画面全体に画像を拡大/縮小して表示 */
+                background-repeat: no-repeat;    /* 画像の繰り返しを停止 */
+                background-attachment: fixed;    /* スクロールしても画像を固定 */
+                background-position: center center; /* 画像を中央に配置 */
+                text-align: center;
+                color: white; /* 背景が暗くなる場合に備えてデフォルトの文字色を白に */
+            }
+        }
     </style>
 </head>
 <body>
