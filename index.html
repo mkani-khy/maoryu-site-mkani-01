@@ -95,17 +95,6 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="tier_battle.html" class="banner_left">
-            <img src="./image/banner_battleRanking.png" alt="戦闘キャラランキング" width="450" height="270">
-        </a>
-        <a href="tier_blessing.html" class="banner_right">
-            <img src="./image/banner_blessingRanking.png" alt="加護キャラランキング" width="450" height="270">
-        </a>
-        <a href="gacha_simulation.html" class="banner_left2">
-            <img src="./image/banner_gacha.png" alt="ガチャシミュレーション" width="450" height="270">
-        </a>
-    </div>
     <h1>まおりゅう まとめサイト</h1>
     <div class="link-container">
         <a href="data_battle.html" class="link-button">戦闘キャラクター一覧</a>
@@ -118,9 +107,14 @@
 
         <a href="damageCalculation.html" class="link-button">ダメージ計算</a>
 
-        <a href="battle.html" class="link-button">英傑杯まとめ</a>
-
-        <a href="event_history.html" class="link-button">過去イベント一覧</a>
+        <a href="gacha_simulation.html" class="link-button">ガチャシミュレーション</a>
     </div>
+    <script>
+        const pass = prompt("パスワードを入力してください");
+        if(pass !== "1225") {
+            alert("アクセス権がありません");
+            document.body.innerHTML = "<h1>認証に失敗しました</h1>";
+        }
+    </script>
 </body>
 </html>
