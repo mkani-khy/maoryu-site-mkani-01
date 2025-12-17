@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>まおりゅう まとめサイト</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpg" href="image/summary.jpg">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            
+            /* === 背景画像の設定（★ここをあなたのイラストのファイル名とパスに置き換えてください★） === */
+            background-image: url('image/background(4).jpg'); /* 例: 'image/main_bg.png'など */
+            background-size: cover;          /* 画面全体に画像を拡大/縮小して表示 */
+            background-repeat: no-repeat;    /* 画像の繰り返しを停止 */
+            background-attachment: fixed;    /* スクロールしても画像を固定 */
+            background-position: center center; /* 画像を中央に配置 */
+            
+            text-align: center;
+            color: white; /* 背景が暗くなる場合に備えてデフォルトの文字色を白に */
+        }
+        
+        h1 {
+            /* 背景が画像になったため、ヘッダーの文字色を白、影をつけて見やすくします */
+            color: white;
+            text-shadow: 2px 2px 4px #000000; /* 文字に影を追加 */
+            margin-bottom: 40px;
+        }
+        
+        .link-container {
+            /* リンクエリアを半透明の背景で囲み、背景画像とのコントラストを確保 */
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px; /* パディングを追加 */
+            background-color: rgba(0, 0, 0, 0.6); /* 半透明の黒背景 (60%の不透明度) */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        
+        .link-button {
+            display: block;
+            padding: 15px 20px;
+            background-color: #83a9d3; /* 青系のボタン */
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+        }
+        .link-button:hover {
+            background-color: #007bff;
+        }
+        .container{
+            position: relative;
+        }
+        .container_movie{
+            position: relative;
+            overflow: hidden;
+        }
+        .banner_left{
+            position: absolute;
+            top: 120px;
+            left: 0;
+            z-index: 100;
+        }
+        .banner_right{
+            position: absolute;
+            top: 120px;
+            right: 0;
+            z-index: 100;
+        }
+        .banner_left2{
+            position: absolute;
+            top: 420px;
+            left: 0;
+            z-index: 100;
+        }
+        .banner_right2{
+            position: absolute;
+            top: 420px;
+            right: 0;
+            z-index: 100;
+        }
+        .banner_game{
+            position: absolute;
+            top: 0;
+            right: 2px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="tier_battle.html" class="banner_left">
+            <img src="./image/banner_battleRanking.png" alt="戦闘キャラランキング" width="450" height="270">
+        </a>
+        <a href="tier_blessing.html" class="banner_right">
+            <img src="./image/banner_blessingRanking.png" alt="加護キャラランキング" width="450" height="270">
+        </a>
+        <a href="gacha_simulation.html" class="banner_left2">
+            <img src="./image/banner_gacha.png" alt="ガチャシミュレーション" width="450" height="270">
+        </a>
+    </div>
+    <h1>まおりゅう まとめサイト</h1>
+    <div class="link-container">
+        <a href="data_battle.html" class="link-button">戦闘キャラクター一覧</a>
+        
+        <a href="data_blessing.html" class="link-button">加護キャラクター一覧</a>
+
+        <a href="organization_keep.html" class="link-button">編成保存＆閲覧</a>
+
+        <a href="saved_teams_view.html" class="link-button">編成詳細閲覧</a>
+
+        <a href="damageCalculation.html" class="link-button">ダメージ計算</a>
+
+        <a href="battle.html" class="link-button">英傑杯まとめ</a>
+
+        <a href="event_history.html" class="link-button">過去イベント一覧</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>まおりゅう 編成保存＆閲覧</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="image/organization.png"> 
+    <style>
+        /* New Game Site Theme for organization_keep.html (Character Pool Size FIX 2) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e; /* Deep Blue/Purple */
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 { 
+            text-align: center; 
+            color: #ffc107; /* Gold Header */
+            border-bottom: 3px solid #00bcd4;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px #000;
+        }
+        
+        /* Panel/Card Style */
+        #formationArea, #selectorArea, #teamManagement {
+            background-color: #2c394b; /* Dark Card Background */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 25px;
+            border: 2px solid #00bcd4;
+        }
+        
+        /* Button Styling */
+        button {
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-primary { 
+            background-color: #ffc107; 
+            color: #1a1a2e; 
+            border: 2px solid #ffeb3b;
+        }
+        .btn-primary:hover { background-color: #ffeb3b; }
+        
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover { background-color: #c82333; }
+        
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #1e7e34; }
+        
+        /* Secondary buttons for utility/management */
+        .btn-secondary { 
+            background-color: #00bcd4; 
+            color: #1a1a2e; 
+            font-size: inherit;
+        }
+        .btn-secondary:hover { background-color: #76ff03; } /* Light Green Accent for secondary/utility */
+
+        /* Tab Buttons */
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #00bcd4;
+        }
+        .tab-btn {
+            background-color: #3e4a59;
+            color: #e0e0e0;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+            padding: 10px 20px;
+            border-bottom: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .tab-btn.active {
+            background-color: #00bcd4;
+            color: #1a1a2e;
+            font-weight: bold;
+            border-bottom: 3px solid #ffc107;
+            margin-bottom: -2px; /* Pull it over the border */
+        }
+
+        /* Input Styling */
+        input[type="text"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #3e4a59;
+            color: #e0e0e0;
+        }
+
+        /* === 編成エリアのレイアウト (Formation Area) === */
+        #formationArea h2 {
+            color: #ffc107;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3e4a59;
+        }
+        .formation-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            padding: 15px 0;
+        }
+        .slot-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #1a1a2e; /* Slot grouping background */
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed #00bcd4;
+        }
+        .slot-label {
+            font-weight: bold;
+            color: #ffc107;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        .drop-slot {
+            /* スロットサイズは60pxを維持（配置されているキャラの視認性のため） */
+            width: 60px;
+            height: 60px;
+            border: 3px dashed #76ff03; /* Light Green for slot border */
+            background-color: #3e4a59;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin: 5px 0;
+            position: relative;
+        }
+        .drop-slot.hover { /* ドラッグオーバー時の強調 */
+            background-color: #556070;
+            border-color: #ffc107;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.8);
+        }
+        .drop-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 2px solid #ffc107; /* Gold border on dropped image */
+            box-sizing: border-box;
+        }
+        .sub-slot {
+            border-style: solid; /* Solid border for sub slot */
+            border-color: #00bcd4;
+        }
+
+        /* === キャラクタプール (画像サイズ再修正: 50px -> 40px) === */
+        #characterPool {
+            border-top: 2px solid #00bcd4;
+            padding-top: 15px;
+        }
+        .chara-list {
+            display: grid;
+            /* 画像サイズをさらに縮小: 50px -> 40px */
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); 
+            gap: 5px; /* ギャップもさらに縮小 */
+            margin-top: 15px;
+        }
+        .chara-item {
+            background-color: #1a1a2e;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: grab;
+            border: 1px solid #444;
+            transition: transform 0.1s, border-color 0.2s;
+            line-height: 0;
+            /* アイテム自体の幅も調整 */
+            width: 60px; 
+            height: 60px;
+        }
+        .chara-item:hover {
+            transform: scale(1.05);
+            border-color: #ffc107;
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+        }
+        .chara-item img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover; /* 画像がはみ出さないように */
+        }
+
+        /* Saved Teams List */
+        #savedTeamsList {
+            list-style: none;
+            padding: 0;
+        }
+        #savedTeamsList li {
+            background-color: #3e4a59;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #ffc107;
+            transition: background-color 0.2s;
+        }
+        #savedTeamsList li:hover {
+            background-color: #4a5a6b;
+        }
+        #savedTeamsList li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        #savedTeamsList li a:hover {
+            color: #00bcd4;
+        }
+        /* --- スマホ最適化: 追加・修正 --- */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            
+            /* 編成エリアの横並びをスクロール可能にするか、サイズを縮小 */
+            .formation-row {
+                gap: 5px;
+                padding: 10px 0;
+                overflow-x: auto; /* 画面からはみ出す場合は横スクロール */
+                justify-content: flex-start;
+            }
+
+            .slot-group {
+                padding: 5px;
+                min-width: 65px; /* スロットが潰れないように確保 */
+            }
+
+            .drop-slot {
+                width: 50px; /* スマホ用に少し小さく */
+                height: 50px;
+            }
+
+            /* キャラクタプールを押しやすく（指のサイズに合わせる） */
+            .chara-list {
+                grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+                gap: 8px;
+            }
+
+            .chara-item {
+                width: 55px;
+                height: 55px;
+            }
+
+            /* 保存コントロールを使いやすく */
+            #saveControls {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            #saveControls input { width: 100%; box-sizing: border-box; }
+        }
+
+        /* タップした時に選択中であることがわかる演出 */
+        .selected-chara {
+            outline: 3px solid #ffc107;
+            box-shadow: 0 0 15px #ffc107;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>編成保存＆閲覧</h1>
+    <p style="text-align: center;">
+        <a href="index.html" style="font-size: 1.1em; color: #007bff; margin-right: 15px;">← TOPへ</a>
+        <a href="saved_teams_view.html" style="font-size: 1.1em; color: #007bff;">編成詳細閲覧へ →</a>
+    </p>
+
+    <div id="saveControls">
+        <input type="text" id="teamNameInput" placeholder="チーム名を入力 (必須)">
+        <button class="btn-primary" onclick="saveTeam()">編成を保存</button>
+        <button class="btn-danger" onclick="clearFormation()">編成クリア</button>
+    </div>
+
+    <details open>
+        <summary>📂 保存されたチーム一覧 (クリックで開閉)</summary>
+        <ul id="savedList">
+            <li style="color:#777; padding:10px;">保存されたチームはありません</li>
+        </ul>
+    </details>
+
+    <div id="formationArea">
+        <h3 style="margin-top:0; text-align:center;">現在の編成</h3>
+        <div class="formation-row">
+            <div class="slot-group">
+                <span class="slot-label">加護</span>
+                <div class="drop-slot" id="slot-protect-main" data-type="protection" data-pos="main" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="slot-group">
+                <span class="slot-label">加護(支)</span>
+                <div class="drop-slot sub-slot" id="slot-protect-sub" data-type="protection" data-pos="sub" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="formation-row">
+            <div class="slot-group">
+                <span class="slot-label">前衛1</span>
+                <div class="drop-slot" id="slot-battle-main-1" data-type="battle" data-pos="main-1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <div class="drop-slot sub-slot" id="slot-battle-sub-1" data-type="battle" data-pos="sub-1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span class="slot-label">支援1</span>
+            </div>
+
+            <div class="slot-group">
+                <span class="slot-label">前衛2</span>
+                <div class="drop-slot" id="slot-battle-main-2" data-type="battle" data-pos="main-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <div class="drop-slot sub-slot" id="slot-battle-sub-2" data-type="battle" data-pos="sub-2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span class="slot-label">支援2</span>
+            </div>
+
+            <div class="slot-group">
+                <span class="slot-label">前衛3</span>
+                <div class="drop-slot" id="slot-battle-main-3" data-type="battle" data-pos="main-3" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <div class="drop-slot sub-slot" id="slot-battle-sub-3" data-type="battle" data-pos="sub-3" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span class="slot-label">支援3</span>
+            </div>
+
+            <div class="slot-group">
+                <span class="slot-label">後衛1</span>
+                <div class="drop-slot" id="slot-battle-main-4" data-type="battle" data-pos="main-4" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <div class="drop-slot sub-slot" id="slot-battle-sub-4" data-type="battle" data-pos="sub-4" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span class="slot-label">支援4</span>
+            </div>
+
+            <div class="slot-group">
+                <span class="slot-label">後衛2</span>
+                <div class="drop-slot" id="slot-battle-main-5" data-type="battle" data-pos="main-5" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <div class="drop-slot sub-slot" id="slot-battle-sub-5" data-type="battle" data-pos="sub-5" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span class="slot-label">支援5</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="selectorArea">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('battle')">⚔️ 戦闘キャラ</button>
+            <button class="tab-btn" onclick="switchTab('protection')">✨ 加護キャラ</button>
+        </div>
+        <input type="text" id="charSearch" placeholder="名前で検索..." oninput="filterPool()" style="width:95%; margin-bottom:10px; padding:5px;">
+        <div id="characterPool">
+            </div>
+    </div>
+
+    <script src="script_organization.js"></script>
+</body>
+</html>
