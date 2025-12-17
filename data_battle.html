@@ -184,9 +184,26 @@
             background-color: #c82333;
         }
         @media (max-width: 600px) {
+            .filterRow{
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 10px;
+            }
+            .filterRow select,
+            .filterRow input {
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+            button {
+                padding: 12px;
+                width: 100%;
+                margin-bottom: 5px;
+            }
             #charaTable td, #charaTable th {
-                font-size: 12px;
-                padding: 4px;
+                font-size: 11px; /* スマホでは文字を小さく */
+                padding: 2px 4px;
             }
             #charaTable td:nth-child(2),#charaTable th:nth-child(2) {
                 position: static !important;
