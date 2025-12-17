@@ -15,24 +15,20 @@ window.addEventListener('load', async () => {
     await loadAllData();
     renderCharacterPool();
     loadSavedTeams();
-    setupSlotClickEvents(); // スマホ用クリックイベント設定
+    setupSlotClickEvents(); // スマホ・PC共通のクリック/削除イベント設定
 });
 
 // データの読み込み
 async function loadAllData() {
     try {
-        const resBattle = await fetch(BATTLE_JSON);
+        const [resBattle, resBlessing] = await Promise.all([
+            fetch(BATTLE_JSON),
+            fetch(BLESSING_JSON)
+        ]);
         if (resBattle.ok) battleData = await resBattle.json();
-
-        try {
-            const resBlessing = await fetch(BLESSING_JSON);
-            if (resBlessing.ok) blessingData = await resBlessing.json();
-        } catch (e) {
-            console.warn('加護データが見つかりません。', e);
-        }
+        if (resBlessing.ok) blessingData = await resBlessing.json();
     } catch (error) {
         console.error('データの読み込みに失敗しました', error);
-        alert('データの読み込みに失敗しました。');
     }
 }
 
@@ -79,7 +75,7 @@ function renderCharacterPool() {
             e.dataTransfer.setData("text/plain", JSON.stringify(fullData));
         };
 
-        // スマホ用：タップ選択
+        // スマホ・PC共通：タップ選択
         div.onclick = () => {
             if (selectedCharaData && selectedCharaData.id === div.id) {
                 div.classList.remove('selected-chara');
@@ -102,6 +98,32 @@ function renderCharacterPool() {
     pool.appendChild(charaList);
 }
 
+// === スロットへの配置/削除イベント設定 ===
+function setupSlotClickEvents() {
+    document.querySelectorAll('.drop-slot').forEach(slot => {
+        // onclickで上書きすることで確実に1つのイベントだけを管理
+        slot.onclick = () => {
+            if (selectedCharaData) {
+                // キャラ選択中なら配置
+                handlePlacement(slot, selectedCharaData);
+                // 配置後に選択を解除
+                document.querySelectorAll('.chara-item').forEach(el => el.classList.remove('selected-chara'));
+                selectedCharaData = null;
+            } else {
+                // 未選択状態でキャラが入っていれば削除
+                const charName = slot.dataset.charName;
+                if (charName) {
+                    if (window.confirm(`「${charName}」を編成から外しますか？`)) {
+                        slot.innerHTML = '';
+                        delete slot.dataset.charName;
+                        delete slot.dataset.imgSrc;
+                    }
+                }
+            }
+        };
+    });
+}
+
 // === 配置ロジック (共通) ===
 function handlePlacement(slot, charaData) {
     // 重複チェック
@@ -110,7 +132,7 @@ function handlePlacement(slot, charaData) {
     });
 
     if (isDuplicate) {
-        alert('既に編成されています。');
+        alert('そのキャラクターは既に編成されています。');
         return;
     }
 
@@ -127,29 +149,20 @@ function handlePlacement(slot, charaData) {
 function setSlotContent(slot, charaData) {
     slot.innerHTML = '';
     const img = document.createElement('img');
-    img.src = 'image/' + (charaData.imgSrc || 'placeholder.jpg');
+    const cleanPath = charaData.imgSrc ? charaData.imgSrc.replace(/^image\//, '') : 'placeholder.jpg';
+    img.src = 'image/' + cleanPath;
     img.alt = charaData.name;
+    
+    // 重要：画像がクリックを邪魔しないように設定
+    img.style.pointerEvents = 'none'; 
+    
     slot.appendChild(img);
 
     slot.dataset.charName = charaData.name;
     slot.dataset.imgSrc = charaData.imgSrc;
 }
 
-// === イベント設定 ===
-function setupSlotClickEvents() {
-    document.querySelectorAll('.drop-slot').forEach(slot => {
-        // スマホ用タップ配置 
-        slot.addEventListener('click', () => {
-            if (selectedCharaData) {
-                handlePlacement(slot, selectedCharaData);
-                // 配置後に選択解除
-                document.querySelectorAll('.chara-item').forEach(el => el.classList.remove('selected-chara'));
-                selectedCharaData = null;
-            }
-        });
-    });
-}
-
+// === PCドラッグ&ドロップ用 ===
 function allowDrop(event) {
     event.preventDefault();
 }
